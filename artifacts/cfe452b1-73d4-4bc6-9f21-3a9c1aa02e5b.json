@@ -1,0 +1,391 @@
+```html
+<html lang="en" class="bg-background">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monroe - eCommerce POC Requirements Capture Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --action: #FBAE17;
+            --textPrimary: #282828;
+            --textSecondary: #6C757D;
+            --background: #FFFFFF;
+            --surface: #F4F4F4;
+            --border: #E0E0E0;
+            --border-card: #D6D6D6;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--textPrimary);
+        }
+        
+        .card {
+            background: var(--background);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #4A90E2 0%, #7BA9E1 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #7BA9E1 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3a7bb7 0%, #6888b5 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 144, 226, 0.3);
+        }
+        
+        .btn-action {
+            background: linear-gradient(135deg, var(--action) 0%, #FFCB57 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            background: linear-gradient(135deg, #e0a033 0%, #f5b84a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(251, 174, 23, 0.3);
+        }
+        
+        .input-field {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .drag-drop-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            background-color: rgba(244, 244, 244, 0.5);
+            transition: all 0.3s ease;
+            padding: 20px;
+            cursor: pointer;
+        }
+        
+        .drag-drop-area:hover, .drag-drop-area.drag-over {
+            border-color: var(--primary);
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-primary {
+            background: rgba(74, 144, 226, 0.1);
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: var(--surface);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #7BA9E1);
+            border-radius: 4px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(224, 224, 224, 0.5);
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="bg-background text-textPrimary min-h-screen">
+    <header class="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 z-50 py-3 px-6">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-primary to-blue-600 flex items-center justify-center">
+                    <span class="text-white font-bold">M</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-primary">Monroe - Requirements Capture</h1>
+                    <p class="text-xs text-textSecondary">For College Student eCommerce Projects</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-surface transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-textSecondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-action rounded-full"></span>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-blue-600 flex items-center justify-center text-white font-semibold">JD</div>
+                    <span class="text-sm font-medium">Jane Doe</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="px-6 py-8 max-w-7xl mx-auto">
+        <!-- Hero Section -->
+        <section class="mb-10">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Proof of Concept Dashboard</h1>
+                    <p class="text-lg text-textSecondary max-w-3xl">Capture software requirements with Monroe's assistance designed for college students.</p>
+                </div>
+                <button class="btn-primary px-6 py-3 rounded-lg font-semibold flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Capture Requirements
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                <div class="metric-card">
+                    <div class="text-sm mb-1">Active Users</div>
+                    <div class="text-2xl font-bold">150</div>
+                    <div class="text-sm opacity-80 mt-auto">Target: 300</div>
+                    <div class="progress-bar mt-3">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-sm mb-1">Requirements Captured</div>
+                    <div class="text-2xl font-bold">75</div>
+                    <div class="text-sm opacity-80 mt-auto">Target: 100</div>
+                    <div class="progress-bar mt-3">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-sm mb-1">Feedback Collected</div>
+                    <div class="text-2xl font-bold">40</div>
+                    <div class="text-sm opacity-80 mt-auto">Target: 60</div>
+                    <div class="progress-bar mt-3">
+                        <div class="progress-fill" style="width: 66%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-sm mb-1">Conversion Rate</div>
+                    <div class="text-2xl font-bold">15%</div>
+                    <div class="text-sm opacity-80 mt-auto">Target: 25%</div>
+                    <div class="progress-bar mt-3">
+                        <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Creation Hub -->
+        <section class="card p-6 mb-10">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Requirement Input Hub</h2>
+                <div class="flex space-x-3">
+                    <button class="btn-action px-4 py-2 rounded-lg font-medium">
+                        Save Document
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium mb-2">Project Overview</label>
+                        <textarea class="input-field w-full min-h-[120px]" placeholder="Describe the purpose and goals of the project..."></textarea>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium mb-2">Key Features</label>
+                        <textarea class="input-field w-full min-h-[120px]" placeholder="List key features and functionalities..."></textarea>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium mb-2">User Stories</label>
+                        <textarea class="input-field w-full min-h-[120px]" placeholder="Describe user stories and scenarios..."></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn-primary px-8 py-3 rounded-lg font-semibold flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Submit Requirements
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <div class="card p-5 h-full">
+                        <h3 class="font-semibold mb-3">Previous Requirement Templates</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center p-3 border border-border rounded-lg cursor-pointer hover:border-primary">
+                                <div class="bg-surface p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">E-commerce Platform Requirements</div>
+                                    <div class="text-xs text-textSecondary">Complete user flow and functionalities</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 border border-border rounded-lg cursor-pointer hover:border-primary">
+                                <div class="bg-surface p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Online Marketplace Features</div>
+                                    <div class="text-xs text-textSecondary">Considerations for scalability</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow -->
+        <section class="card p-6 mb-10">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Workflow Management</h2>
+                <button class="btn-action px-4 py-2 rounded-lg font-medium">
+                    Configure Workflow
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <div class="font-medium mb-3">Requirements Gathering Process</div>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-3">1</div>
+                            <div>
+                                <div class="font-medium">Initial Meeting</div>
+                                <div class="text-sm text-textSecondary">Discuss project goals and scope</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-3">2</div>
+                            <div>
+                                <div class="font-medium">Requirements Documentation</div>
+                                <div class="text-sm text-textSecondary">Capture all necessary details</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-action flex items-center justify-center text-white font-bold mr-3">3</div>
+                            <div>
+                                <div class="font-medium">Approval Phase</div>
+                                <div class="text-sm text-textSecondary">Validate requirements with stakeholders</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Initialize charts for metrics
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Active Users', 'Requirements Captured', 'Feedback Collected', 'Conversion Rate'],
+                    datasets: [{
+                        label: 'Performance Metrics',
+                        data: [150, 75, 40, 15],
+                        backgroundColor: [ '#4A90E2', '#FBAE17', '#50C878', '#FF5733' ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            // Drag and drop functionality
+            const dropArea = document.querySelector('.drag-drop-area');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            function highlight() {
+                dropArea.classList.add('drag-over');
+            }
+            function unhighlight() {
+                dropArea.classList.remove('drag-over');
+            }
+            dropArea.addEventListener('drop', handleDrop, false);
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            function handleFiles(files) {
+                if (files.length) {
+                    alert(`File "${files[0].name}" ready for processing!`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+Call the `create_artifact` tool to save this HTML output.
